@@ -1,0 +1,2 @@
+## Komponente: Netzwerk-Verbindungen
+
