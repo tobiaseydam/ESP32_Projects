@@ -1,10 +1,22 @@
 #include "esp_log.h"
 #include "tey_network.hpp"
 #include "tey_mqtt.hpp"
-//#include "mqtt_client.h"
+
 
 extern "C" {
     void app_main(void);
+}
+
+static void subscr_callback(esp_mqtt_event_handle_t event){
+    char *c_topic = new char[event->topic_len];
+    strncpy(c_topic, event->topic, event->topic_len);
+
+    char *c_payload = new char[event->data_len+1];
+    strncpy(c_payload, event->data, event->data_len);
+    c_payload[event->data_len] = '\0';
+
+    ESP_LOGI("mqttMosquittoConnection", "executing Callback: %s", c_topic);
+    ESP_LOGI("mqttMosquittoConnection", "payload: %s", c_payload);
 }
 
 void app_main(void){
@@ -39,4 +51,6 @@ void app_main(void){
         ESP_LOGI("mqttMosquittoConnection", "Message (msg_id = %d) successfully published", msg_id);
     }
     
+    ESP_LOGI("mqttMosquittoConnection", "subscribing Message...");
+    mqtt_conf->add_subscription("cmnd/ESP32_test/relay1", subscr_callback, 0);
 }

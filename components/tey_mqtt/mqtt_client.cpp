@@ -9,6 +9,15 @@ mqtt_client_config::mqtt_client_config(){
     event_group = xEventGroupCreate();
 }
 
+void mqtt_client_config::add_subscription(std::string topic, mqtt_subscription_callback_t callback, uint8_t qos){
+    subs[topic] = callback;
+    esp_mqtt_client_subscribe(client, topic.c_str(), qos);
+}
+
+mqtt_subscription_callback_t mqtt_client_config::get_subscription_callback(std::string topic){
+    return subs[topic];
+}
+
 esp_err_t mqtt_client::event_handler(esp_mqtt_event_handle_t event){
     switch (event->event_id) {
         case MQTT_EVENT_CONNECTED:{
@@ -39,6 +48,15 @@ esp_err_t mqtt_client::event_handler(esp_mqtt_event_handle_t event){
         }
         case MQTT_EVENT_DATA:{
             ESP_LOGI(TAG, "MQTT_EVENT_DATA");
+            mqtt_client_config* conf = (mqtt_client_config*) event->user_context;
+            
+            char *c_topic = new char[event->topic_len];
+            strncpy(c_topic, event->topic, event->topic_len);
+            
+            mqtt_subscription_callback_t cb = conf->get_subscription_callback(c_topic);
+            if(cb != NULL){
+                cb(event);
+            }
             break;
         }
         case MQTT_EVENT_ERROR:{
@@ -58,13 +76,13 @@ mqtt_client::mqtt_client(mqtt_client_config *mqtt_cfg){
     config.port = cfg->get_port();
     config.event_handle = event_handler;
     config.user_context = cfg;
-    client = esp_mqtt_client_init(&config);
+    cfg->set_client(esp_mqtt_client_init(&config));
 }
 
 void mqtt_client::connect(){
-    esp_mqtt_client_start(client);
+    esp_mqtt_client_start(cfg->get_client());
 }
 
 int mqtt_client::publish(std::string topic, std::string payload, uint8_t qos, bool retain){
-    return esp_mqtt_client_publish(client, topic.c_str(), payload.c_str(), 0, qos, retain);
+    return esp_mqtt_client_publish(cfg->get_client(), topic.c_str(), payload.c_str(), 0, qos, retain);
 }
