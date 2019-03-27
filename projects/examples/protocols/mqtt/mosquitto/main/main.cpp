@@ -31,5 +31,12 @@ void app_main(void){
     ESP_LOGI("mqttMosquittoConnection", "connecting MQTT-Client...");
     cl->connect();
 
+    xEventGroupWaitBits(mqtt_conf->get_event_group(), MQTT_CONNECTED_BIT, false, false, portMAX_DELAY);
+    ESP_LOGI("mqttMosquittoConnection", "publishing Message...");
+    int msg_id = cl->publish("ow/ESP32_test/onewire", "1", 0, false);
 
+    if (msg_id >= 0) {
+        ESP_LOGI("mqttMosquittoConnection", "Message (msg_id = %d) successfully published", msg_id);
+    }
+    
 }

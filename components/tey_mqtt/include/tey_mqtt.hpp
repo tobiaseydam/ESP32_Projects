@@ -41,6 +41,8 @@ class mqtt_client{
     public:
         mqtt_client(mqtt_client_config *mqtt_cfg);
         void connect();
+
+        int publish(std::string topic, std::string payload, uint8_t qos, bool retain);
 };
 
 #endif
