@@ -6,7 +6,7 @@ extern "C" {
 }
 
 void app_main(void){
-    ESP_LOGI("ethConnection", "configuring...");
+    ESP_LOGI("ethConnection", "configuring ETH-Connection...");
     eth_config* conf = new eth_config();
 
     ESP_LOGI("ethConnection", "establishing ETH-Connection...");

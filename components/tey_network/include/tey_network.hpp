@@ -8,12 +8,12 @@
 #include "freertos/task.h"
 #include "freertos/event_groups.h"
 
-#define START_BIT           BIT0
-#define STOP_BIT            BIT1
-#define CONNECTED_BIT       BIT2
-#define DISCONNECTED_BIT    BIT3
-#define GOT_IP_BIT          BIT4
-#define LOST_IP_BIT         BIT5
+#define NW_START_BIT           BIT0
+#define NW_STOP_BIT            BIT1
+#define NW_CONNECTED_BIT       BIT2
+#define NW_DISCONNECTED_BIT    BIT3
+#define NW_GOT_IP_BIT          BIT4
+#define NW_LOST_IP_BIT         BIT5
 
 class network_config{
     private:

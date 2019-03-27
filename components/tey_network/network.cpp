@@ -1,4 +1,4 @@
-#include "network.hpp"
+#include "tey_network.hpp"
 #include "esp_log.h"
 #include "driver/gpio.h"
 #include "driver/periph_ctrl.h"
@@ -35,7 +35,7 @@ esp_err_t network_adapter::event_handler(void *ctx, system_event_t *event){
             ESP_LOGI(TAG, "SYSTEM_EVENT_STA_START");
             wifi_config* conf = (wifi_config*) ctx;
             xEventGroupClearBits(conf->get_event_group(), 0xFF);
-            xEventGroupSetBits(conf->get_event_group(), START_BIT);
+            xEventGroupSetBits(conf->get_event_group(), NW_START_BIT);
             break;
         }
 
@@ -43,23 +43,23 @@ esp_err_t network_adapter::event_handler(void *ctx, system_event_t *event){
             ESP_LOGI(TAG, "SYSTEM_EVENT_STA_STOP");
             wifi_config* conf = (wifi_config*) ctx;
             xEventGroupClearBits(conf->get_event_group(), 0xFF);
-            xEventGroupSetBits(conf->get_event_group(), STOP_BIT);
+            xEventGroupSetBits(conf->get_event_group(), NW_STOP_BIT);
             break;
         }
 
         case SYSTEM_EVENT_STA_CONNECTED:{           /**< ESP32 station connected to AP */
             ESP_LOGI(TAG, "SYSTEM_EVENT_STA_CONNECTED");
             wifi_config* conf = (wifi_config*) ctx;
-            xEventGroupClearBits(conf->get_event_group(), DISCONNECTED_BIT);
-            xEventGroupSetBits(conf->get_event_group(), CONNECTED_BIT);
+            xEventGroupClearBits(conf->get_event_group(), NW_DISCONNECTED_BIT);
+            xEventGroupSetBits(conf->get_event_group(), NW_CONNECTED_BIT);
             break;
         }
 
         case SYSTEM_EVENT_STA_DISCONNECTED:{        /**< ESP32 station disconnected from AP */
             ESP_LOGI(TAG, "SYSTEM_EVENT_STA_DISCONNECTED");
             wifi_config* conf = (wifi_config*) ctx;
-            xEventGroupClearBits(conf->get_event_group(), CONNECTED_BIT);
-            xEventGroupSetBits(conf->get_event_group(), DISCONNECTED_BIT);
+            xEventGroupClearBits(conf->get_event_group(), NW_CONNECTED_BIT);
+            xEventGroupSetBits(conf->get_event_group(), NW_DISCONNECTED_BIT);
             break;
         }
 
@@ -71,16 +71,16 @@ esp_err_t network_adapter::event_handler(void *ctx, system_event_t *event){
         case SYSTEM_EVENT_STA_GOT_IP:{               /**< ESP32 station got IP from connected AP */
             ESP_LOGI(TAG, "SYSTEM_EVENT_STA_GOT_IP");
             wifi_config* conf = (wifi_config*) ctx;
-            xEventGroupClearBits(conf->get_event_group(), LOST_IP_BIT);
-            xEventGroupSetBits(conf->get_event_group(), GOT_IP_BIT);
+            xEventGroupClearBits(conf->get_event_group(), NW_LOST_IP_BIT);
+            xEventGroupSetBits(conf->get_event_group(), NW_GOT_IP_BIT);
             break;
         }
 
         case SYSTEM_EVENT_STA_LOST_IP:{              /**< ESP32 station lost IP and the IP is reset to 0 */
             ESP_LOGI(TAG, "SYSTEM_EVENT_STA_LOST_IP");
             wifi_config* conf = (wifi_config*) ctx;
-            xEventGroupClearBits(conf->get_event_group(), GOT_IP_BIT);
-            xEventGroupSetBits(conf->get_event_group(), LOST_IP_BIT);
+            xEventGroupClearBits(conf->get_event_group(), NW_GOT_IP_BIT);
+            xEventGroupSetBits(conf->get_event_group(), NW_LOST_IP_BIT);
             break;
         }
 
@@ -108,7 +108,7 @@ esp_err_t network_adapter::event_handler(void *ctx, system_event_t *event){
             ESP_LOGI(TAG, "SYSTEM_EVENT_AP_START");
             wifi_config* conf = (wifi_config*) ctx;
             xEventGroupClearBits(conf->get_event_group(), 0xFF);
-            xEventGroupSetBits(conf->get_event_group(), START_BIT);
+            xEventGroupSetBits(conf->get_event_group(), NW_START_BIT);
             break;
         }
 
@@ -116,7 +116,7 @@ esp_err_t network_adapter::event_handler(void *ctx, system_event_t *event){
             ESP_LOGI(TAG, "SYSTEM_EVENT_AP_STOP");
             wifi_config* conf = (wifi_config*) ctx;
             xEventGroupClearBits(conf->get_event_group(), 0xFF);
-            xEventGroupSetBits(conf->get_event_group(), STOP_BIT);
+            xEventGroupSetBits(conf->get_event_group(), NW_STOP_BIT);
             break;
         }
 
@@ -149,7 +149,7 @@ esp_err_t network_adapter::event_handler(void *ctx, system_event_t *event){
             ESP_LOGI(TAG, "SYSTEM_EVENT_ETH_START");
             eth_config* conf = (eth_config*) ctx;
             xEventGroupClearBits(conf->get_event_group(), 0xFF);
-            xEventGroupSetBits(conf->get_event_group(), START_BIT);
+            xEventGroupSetBits(conf->get_event_group(), NW_START_BIT);
             break;
         }
 
@@ -157,30 +157,30 @@ esp_err_t network_adapter::event_handler(void *ctx, system_event_t *event){
             ESP_LOGI(TAG, "SYSTEM_EVENT_ETH_STOP");
             eth_config* conf = (eth_config*) ctx;
             xEventGroupClearBits(conf->get_event_group(), 0xFF);
-            xEventGroupSetBits(conf->get_event_group(), STOP_BIT);
+            xEventGroupSetBits(conf->get_event_group(), NW_STOP_BIT);
             break;
         }
 
         case SYSTEM_EVENT_ETH_CONNECTED:{            /**< ESP32 ethernet phy link up */
             ESP_LOGI(TAG, "SYSTEM_EVENT_ETH_CONNECTED");
             eth_config* conf = (eth_config*) ctx;
-            xEventGroupClearBits(conf->get_event_group(), DISCONNECTED_BIT);
-            xEventGroupSetBits(conf->get_event_group(), CONNECTED_BIT);
+            xEventGroupClearBits(conf->get_event_group(), NW_DISCONNECTED_BIT);
+            xEventGroupSetBits(conf->get_event_group(), NW_CONNECTED_BIT);
             break;
         }
 
         case SYSTEM_EVENT_ETH_DISCONNECTED:{         /**< ESP32 ethernet phy link down */
             ESP_LOGI(TAG, "SYSTEM_EVENT_ETH_DISCONNECTED");
             eth_config* conf = (eth_config*) ctx;
-            xEventGroupClearBits(conf->get_event_group(), CONNECTED_BIT);
-            xEventGroupSetBits(conf->get_event_group(), DISCONNECTED_BIT);
+            xEventGroupClearBits(conf->get_event_group(), NW_CONNECTED_BIT);
+            xEventGroupSetBits(conf->get_event_group(), NW_DISCONNECTED_BIT);
             break;
         }
 
         case SYSTEM_EVENT_ETH_GOT_IP:{               /**< ESP32 ethernet got IP from connected AP */
             ESP_LOGI(TAG, "SYSTEM_EVENT_ETH_GOT_IP");
             eth_config* conf = (eth_config*) ctx;
-            xEventGroupSetBits(conf->get_event_group(), GOT_IP_BIT);
+            xEventGroupSetBits(conf->get_event_group(), NW_GOT_IP_BIT);
             break;
         }
 
