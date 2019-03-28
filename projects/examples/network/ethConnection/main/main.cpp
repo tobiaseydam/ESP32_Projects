@@ -1,5 +1,5 @@
 #include "esp_log.h"
-#include "network.hpp"
+#include "tey_network.hpp"
 
 extern "C" {
     void app_main(void);
