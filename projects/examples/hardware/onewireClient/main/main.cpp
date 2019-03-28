@@ -14,6 +14,5 @@ void app_main(void){
     while(1){
         vTaskDelay(pdMS_TO_TICKS(5*1000));
         ESP_LOGI("onewireClient", "Temperatur: %.2f °C", conf->get_device(0)->get_temperature());
-
     }
 }

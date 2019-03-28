@@ -1,3 +1,1 @@
-## Beispiel: Leeres Beispiel
-
-Vorlage zum Kopieren
+## Beispiel: Onewire-Client
