@@ -55,7 +55,7 @@ esp_err_t http_request_parser::parse_block(std::string block){
     if(!name.empty()){
         if(!filename.empty()){
             if(upload_field_found != NULL){
-                upload_field_found(name, filename, value, field_found_ctx);
+                upload_field_found(name, filename, value, upload_found_ctx);
             }
         }else{
             if(field_found != NULL){

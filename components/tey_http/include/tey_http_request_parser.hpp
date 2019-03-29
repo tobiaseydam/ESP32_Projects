@@ -19,12 +19,14 @@ class http_request_parser{
         std::string get_header_field(std::string header, std::string field);
         esp_err_t parse_block(std::string block);
         void *field_found_ctx = NULL;
+        void *upload_found_ctx = NULL;
     public:
         http_request_parser(httpd_req_t *request);
         void set_field_found_callback(field_callback_t value) {field_found = value; };
         void set_upload_found_callback(upload_callback_t value) {upload_field_found = value; };
 
         void set_field_found_ctx(void* value) { field_found_ctx = value; };
+        void set_upload_found_ctx(void* value) { upload_found_ctx = value; };
         
         esp_err_t parse();
 };

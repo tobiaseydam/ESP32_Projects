@@ -68,7 +68,8 @@ int storage_handle::get_children_count(bool count){
 }
 
 storage_handle* storage_handle::get_first_child(){
-    if(is_file()){
+    if(name.compare("/spiffs") != 0){
+        ESP_LOGI(TAG, "%s is a file", name.c_str());
         return NULL;
     }
     if(dir_handle != NULL){
@@ -76,10 +77,12 @@ storage_handle* storage_handle::get_first_child(){
     }
     dir_handle = opendir(name.c_str());
     if(dir_handle == NULL){
+        ESP_LOGI(TAG, "could not open %s", name.c_str());
         return NULL;
     }else{
         struct dirent *ent = readdir(dir_handle);
         if(ent == NULL){
+            ESP_LOGI(TAG, "error reading dir %s", name.c_str());
             return NULL;
         }
         return new storage_handle(name + "/" + ent->d_name);
