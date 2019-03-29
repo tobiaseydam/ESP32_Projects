@@ -1,7 +1,19 @@
 ## Beispiel: SPIFFS
 
+Für dieses Beispiel wird eine Partition für das SPIFFS-Dateisystem benötigt:
+
+```
 make menuconfig
-
 Partition Table -> Partition Table: Custom partition table CSV
-
 Partition Table -> Custom partitions CSV file: partitions.csv
+```
+
+partitions.csv:
+```
+# Name,   Type, SubType, Offset,  Size, Flags
+# Note: if you change the phy_init or app partition offset, make sure to change the offset in Kconfig.projbuild
+nvs,      data, nvs,     0x9000,  0x6000,
+phy_init, data, phy,     0xf000,  0x1000,
+factory,  app,  factory, 0x10000, 1M,
+storage,  data, spiffs,  ,        0xF0000, 
+```
