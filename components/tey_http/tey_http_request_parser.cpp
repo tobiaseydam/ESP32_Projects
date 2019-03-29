@@ -28,7 +28,7 @@ std::string http_request_parser::get_block_value(std::string block){
             break;
     }
     p1 = p2;
-    std::string value = block.substr(p2+1, block.length()-p2);
+    std::string value = block.substr(p2+1, block.length()-p2-2);
     return value;
 }
 
@@ -55,11 +55,11 @@ esp_err_t http_request_parser::parse_block(std::string block){
     if(!name.empty()){
         if(!filename.empty()){
             if(upload_field_found != NULL){
-                upload_field_found(name, filename, value);
+                upload_field_found(name, filename, value, field_found_ctx);
             }
         }else{
             if(field_found != NULL){
-                field_found(name, value);
+                field_found(name, value, field_found_ctx);
             }
         }
     }

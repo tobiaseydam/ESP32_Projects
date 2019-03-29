@@ -10,9 +10,6 @@ class global_settings{
     protected:
         storage_handle* file;
         std::map<std::string, std::string> str_map;
-        std::map<std::string, int> int_map;
-        std::map<std::string, bool> bool_map;
-        std::map<std::string, double> double_map;
     public:
         global_settings(storage_handle* stor_file);
         void save_to_file();
@@ -23,20 +20,14 @@ class global_settings{
         void set_string_value(std::string key, std::string value) 
             { str_map[key] = value; };
 
-        int get_int_value(std::string key)
-            { return int_map[key]; };
-        void set_int_value(std::string key, int value) 
-            { int_map[key] = value; };
+        int get_int_value(std::string key);
+        void set_int_value(std::string key, int value);
 
-        bool get_bool_value(std::string key)
-            { return bool_map[key]; };
-        void set_bool_value(std::string key, bool value) 
-            { bool_map[key] = value; };
+        bool get_bool_value(std::string key);
+        void set_bool_value(std::string key, bool value);
 
-        double get_double_value(std::string key)
-            { return double_map[key]; };
-        void set_double_value(std::string key, double value) 
-            { double_map[key] = value; };
+        double get_double_value(std::string key);
+        void set_double_value(std::string key, double value);
 
 };
 

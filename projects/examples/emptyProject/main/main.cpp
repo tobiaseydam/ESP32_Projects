@@ -4,6 +4,8 @@ extern "C" {
     void app_main(void);
 }
 
+static constexpr char *TAG = (char*)"emptyProject";
+
 void app_main(void){
-    ESP_LOGI("test", "hello World");
+    ESP_LOGI(TAG, "hello World");
 }

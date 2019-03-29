@@ -2,6 +2,9 @@
 #include "cJSON.h"
 #include "esp_log.h"
 #include <string.h>
+#include <stdlib.h>
+#include <stdio.h>
+
 
 global_settings::global_settings(storage_handle* stor_file){
     file = stor_file;
@@ -24,51 +27,6 @@ void global_settings::save_to_file(){
 
         cJSON_AddItemToArray(cj_settings, cj_elem);
     }
-    
-    for (auto const& elem : int_map){
-        cJSON *cj_elem = cJSON_CreateObject();
-
-        cJSON *cj_elem_type = cJSON_CreateString("int");
-        cJSON_AddItemToObject(cj_elem, "type",  cj_elem_type);
-
-        cJSON *cj_elem_key = cJSON_CreateString(elem.first.c_str());
-        cJSON_AddItemToObject(cj_elem, "key",  cj_elem_key);
-
-        cJSON *cj_elem_value = cJSON_CreateNumber(elem.second);
-        cJSON_AddItemToObject(cj_elem, "value",  cj_elem_value);
-
-        cJSON_AddItemToArray(cj_settings, cj_elem);
-    }
-    
-    for (auto const& elem : bool_map){
-        cJSON *cj_elem = cJSON_CreateObject();
-
-        cJSON *cj_elem_type = cJSON_CreateString("bool");
-        cJSON_AddItemToObject(cj_elem, "type",  cj_elem_type);
-
-        cJSON *cj_elem_key = cJSON_CreateString(elem.first.c_str());
-        cJSON_AddItemToObject(cj_elem, "key",  cj_elem_key);
-
-        cJSON *cj_elem_value = cJSON_CreateBool(elem.second);
-        cJSON_AddItemToObject(cj_elem, "value",  cj_elem_value);
-
-        cJSON_AddItemToArray(cj_settings, cj_elem);
-    }
-    
-    for (auto const& elem : double_map){
-        cJSON *cj_elem = cJSON_CreateObject();
-
-        cJSON *cj_elem_type = cJSON_CreateString("double");
-        cJSON_AddItemToObject(cj_elem, "type",  cj_elem_type);
-
-        cJSON *cj_elem_key = cJSON_CreateString(elem.first.c_str());
-        cJSON_AddItemToObject(cj_elem, "key",  cj_elem_key);
-
-        cJSON *cj_elem_value = cJSON_CreateNumber(elem.second);
-        cJSON_AddItemToObject(cj_elem, "value",  cj_elem_value);
-
-        cJSON_AddItemToArray(cj_settings, cj_elem);
-    }
 
     std::string json = cJSON_Print(cj_settings);
     file->save_string(json);
@@ -76,6 +34,11 @@ void global_settings::save_to_file(){
 
 void global_settings::load_from_file(){
     std::string file_content = file->get_content_as_string();
+    
+    if(file_content.empty()){
+        return;
+    }
+
     cJSON *cj_settings = cJSON_Parse(file_content.c_str());
     
     const cJSON *element = NULL;
@@ -91,16 +54,34 @@ void global_settings::load_from_file(){
             std::string s_value = std::string(value->valuestring);
             str_map[s_key] = s_value;
         }
-        if(strcmp(type->valuestring, "int")==0){
-            int_map[s_key] = value->valueint;
-        }
-        if(strcmp(type->valuestring, "bool")==0){
-            bool_map[s_key] = value->valueint == 1;
-        }
-        if(strcmp(type->valuestring, "double")==0){
-            double_map[s_key] = value->valuedouble;
-        }
     }
     
     cJSON_Delete(cj_settings);
+}
+
+int global_settings::get_int_value(std::string key){
+    return atoi(str_map[key].c_str());
+}
+
+void global_settings::set_int_value(std::string key, int value){
+    char buffer [20];
+    str_map[key] = itoa(value, buffer, 10);
+}
+
+bool global_settings::get_bool_value(std::string key){
+    return atoi(str_map[key].c_str()) == 1;
+}
+
+void global_settings::set_bool_value(std::string key, bool value){
+    str_map[key] = value?"1":"0";
+}
+
+double global_settings::get_double_value(std::string key){
+    return atof(str_map[key].c_str());
+}
+
+void global_settings::set_double_value(std::string key, double value){
+    char buffer [20];
+    sprintf(buffer, "%f", value);
+    str_map[key] = buffer;
 }
