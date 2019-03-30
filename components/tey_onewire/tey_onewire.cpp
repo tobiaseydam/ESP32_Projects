@@ -255,5 +255,5 @@ void onewire_client::read_data(){
 }
 
 void onewire_client::continous_read(){
-    xTaskCreate(run_task, "ONEWIRE_RUN_TASK", 8196, NULL, tskIDLE_PRIORITY, &run_task_handle); 
+    xTaskCreate(run_task, "ONEWIRE_RUN_TASK", 8196, NULL, tskIDLE_PRIORITY+2, &run_task_handle); 
 }

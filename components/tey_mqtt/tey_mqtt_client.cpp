@@ -84,5 +84,6 @@ void mqtt_client::connect(){
 }
 
 int mqtt_client::publish(std::string topic, std::string payload, uint8_t qos, bool retain){
+    ESP_LOGD(TAG, "Publishing Topic: %s", topic.c_str());
     return esp_mqtt_client_publish(cfg->get_client(), topic.c_str(), payload.c_str(), 0, qos, retain);
 }
