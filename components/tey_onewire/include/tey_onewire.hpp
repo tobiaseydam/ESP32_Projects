@@ -8,7 +8,8 @@
 #include "freertos/event_groups.h"
 #include <string>
 
-#define MAX_NUM_ONEWIRE_DEVICES       8
+#define MAX_NUM_ONEWIRE_DEVICES        8
+#define SNQ_LEN_ONEWIRE_DEVICES       10
 
 typedef struct onewire_addr { uint8_t x[8]; } onewire_addr_t;
 typedef struct onewire_data { uint8_t x[9]; } onewire_data_t;
@@ -23,6 +24,10 @@ class onewire_device{
         uint8_t hlp_crc(uint8_t crc, uint8_t d);
         uint16_t readings = 0;
         uint16_t fails = 0;
+        uint8_t snq_len = SNQ_LEN_ONEWIRE_DEVICES;
+        bool snq_arr[SNQ_LEN_ONEWIRE_DEVICES];
+        uint8_t snq;
+        void print_snq();
     public:
         onewire_device(onewire_addr_t a);
         onewire_addr_t get_addr() { return addr; };
@@ -33,6 +38,7 @@ class onewire_device{
         void check_crc();
         uint16_t get_readings() { return readings; };
         uint16_t get_fails() { return fails; };
+        uint8_t get_snq() { return snq; };
         std::string addr_to_string();
         std::string data_to_string();
 };

@@ -29,6 +29,8 @@ class global_settings{
         double get_double_value(std::string key);
         void set_double_value(std::string key, double value);
 
+        bool key_exists(std::string key)
+            { return str_map.find(key) != str_map.end(); };
 };
 
 #endif

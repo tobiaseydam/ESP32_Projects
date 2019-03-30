@@ -1,0 +1,21 @@
+[{
+		"type":	"string",
+		"key":	"28 68 95 5c 06 00 00 02",
+		"value":	"TempSensor1"
+	}, {
+		"type":	"string",
+		"key":	"28 99 c3 5b 06 00 00 c8",
+		"value":	"TempSensor2"
+	}, {
+		"type":	"string",
+		"key":	"mqtt_port",
+		"value":	"1883"
+	}, {
+		"type":	"string",
+		"key":	"mqtt_server",
+		"value":	"192.168.178.23"
+	}, {
+		"type":	"string",
+		"key":	"ow_topic_fragment",
+		"value":	"ow/ESP32_test"
+	}]

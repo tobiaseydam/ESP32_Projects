@@ -16,10 +16,20 @@ uint8_t onewire_device::hlp_crc(uint8_t crc, uint8_t d){
     return crc;
 }
 
+
+void onewire_device::print_snq(){
+    ESP_LOGI("TAG", "%d - %d - %d - %d - %d - %d - %d - %d - %d - %d", snq_arr[0], snq_arr[1], snq_arr[2], snq_arr[3], snq_arr[4], snq_arr[5], snq_arr[6], snq_arr[7], snq_arr[8], snq_arr[9]);
+}
+
 onewire_device::onewire_device(onewire_addr_t a){
     addr = a;
     ESP_LOGI(TAG, "new device: %02x %02x %02x %02x %02x %02x %02x %02x", a.x[0],a.x[1],a.x[2],a.x[3],a.x[4],a.x[5],a.x[6],a.x[7]);
+    for(int i = 0; i<SNQ_LEN_ONEWIRE_DEVICES; i++){
+        snq_arr[i] = false;
+    }
+    print_snq();
 }
+
 
 void onewire_device::set_data(onewire_data_t d){
     data = d;
@@ -27,6 +37,23 @@ void onewire_device::set_data(onewire_data_t d){
     readings++;
     if(!b_crc){
         fails++;
+    }
+
+    for(int i = 0; i<SNQ_LEN_ONEWIRE_DEVICES-1; i++){
+        snq_arr[i] = snq_arr[i+1];
+    }
+    snq_arr[SNQ_LEN_ONEWIRE_DEVICES-1] = b_crc;
+    print_snq();
+
+    snq = 0;
+    for(int i = 0; i<SNQ_LEN_ONEWIRE_DEVICES; i++){
+        if(snq_arr[i]){
+            snq++;
+        }
+    }
+
+    if(readings<SNQ_LEN_ONEWIRE_DEVICES){
+        snq = -1;
     }
 }
 
@@ -195,7 +222,9 @@ void onewire_client::search_devices(){
                 mask.x[j] = m;
                 finished = finished & (m==0);
             }
-            conf->add_device(new onewire_device(addr));
+            if(addr.x[0] != 0xff){
+                conf->add_device(new onewire_device(addr));
+            }
             k++;
             first = false;
         }
@@ -224,6 +253,9 @@ onewire_client::onewire_client(onewire_config *ow_conf){
 }
 
 void onewire_client::read_data(){
+    if(conf->get_num_devices() == 0){
+        return;
+    }
     portMUX_TYPE myMutex = portMUX_INITIALIZER_UNLOCKED;
     portENTER_CRITICAL(&myMutex);
     reset_pulse();

@@ -44,21 +44,26 @@ void app_main(void){
     ow_client->continous_read();
 
     char *c_temp = new char[10];
+    char *c_snq  = new char[10];
     char *c_top  = new char[50];
     onewire_device* ow_dev = NULL;
 
     while(1){
         vTaskDelay(pdMS_TO_TICKS(10000));
         for(int i = 0; i<ow_conf->get_num_devices(); i++){
-             ow_dev = ow_conf->get_device(i);
-             if(ow_dev->get_crc()){
+            ow_dev = ow_conf->get_device(i);
+            if(ow_dev->get_crc()){
                 sprintf(c_temp, "%.2f", ow_dev->get_temperature());
                 ESP_LOGI("onewireMqttLogger", "Temperatur %d: %s °C", i + 1, c_temp);
                 sprintf(c_top, "ow/ESP32_test/TempSensor%d", i + 1);
                 mqtt_cl->publish(c_top, c_temp, 0, false);
-             }else{
+            }else{
                  ESP_LOGI("onewireMqttLogger", "Sensor %d: failed", i + 1);
-             }
+            }
+            sprintf(c_snq, "%d", ow_dev->get_snq());
+            sprintf(c_top, "ow/ESP32_test/TempSensor%d_snq", i + 1);
+            mqtt_cl->publish(c_top, c_snq, 0, false);
+            ESP_LOGI("onewireMqttLogger", "Temperatur %d: %s (snq)", i + 1, c_snq);
         }
     }
 
