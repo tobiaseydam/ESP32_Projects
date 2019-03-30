@@ -1,15 +1,258 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        
-    </head>
-    <body>
-        <form method="POST" action="http://192.168.178.53/edit_settings" enctype="multipart/form-data">
-            <input type="text" name="str_mqtt-boker"><br>
-            <input type="text" name="int_mqtt-port"><br>
-            <input type="text" name="str_mqtt-topic-fragment"><br>
 
-            <input type="submit">
-        </form>
-    </body>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8" />
+	<title>Einstellungen aktualisieren</title>
+	<script type="text/javascript">
+		function openTab(index) {
+			var element = document.getElementsByTagName('div');
+			var name = "";
+			var obj;
+
+			for (var i = 0; i < element.length; i++) {
+				name = element[i].id;
+				if (name.substr(0, 8) == 'tab_box_') {
+					obj = document.getElementById(name);
+
+					obj.hidden = true;
+
+				}
+				if (name.substr(0, 8) == 'tab_top_') {
+					obj = document.getElementById(name);
+					obj.setAttribute('class', 'tab_top_passive');
+				}
+
+			}
+			var tab = document.getElementById("tab_box_" + index);
+			tab.hidden = false;
+			tab = document.getElementById("tab_top_" + index);
+			tab.setAttribute('class', 'tab_top_active');
+		}
+	</script>
+	<style>
+		.tabmenu{
+			width: 400px;
+		/*	position: relative; */
+			display: block;
+			margin-left: auto;
+			margin-right: auto
+		}
+
+		.tab_top_active{
+			float: left;
+			border-style: solid;
+			border-width: 1px;
+			background-color: #ffffff; 
+			margin-bottom: -1px;
+			margin-right: -1px;
+			border-color: #000000;
+			color: #000000;
+			font-weight: bold;
+			font-family: calibri;
+			padding: 5px;
+			cursor: pointer;
+		}
+
+		.tab_top_passive{
+			float: left;
+			border-style: solid;
+			border-width: 1px; 
+			background-color: #ffffff;
+			margin-bottom: -1px;
+			margin-right: -1px;
+			border-color: #808080;
+			color: #808080;
+			font-family: calibri;
+			padding: 5px;
+			cursor: pointer;
+		}
+
+		.tab_box{
+			float: left;
+			border-style: solid;
+			border-width: 1px; 
+			background-color: #ffffff;
+			border-color: #000000;
+			width: 500px;
+			height: 600px;
+		}
+
+		td{
+			font-family: Tahoma;
+			font-size: 10px;
+		}
+	</style>
+</head>
+
+<body>
+	<div id='tabmenu' class='tabmenu'>
+		<!-- Tab-Reiter -->
+		<div id='tab_top_1' class='tab_top_active' onclick='javascript:openTab(1)'>WiFi</div>
+		<div id='tab_top_2' class='tab_top_active' onclick='javascript:openTab(2)'>AWS</div>
+		<div id='tab_top_3' class='tab_top_active' onclick='javascript:openTab(3)'>Zertifikate</div>
+		<div id='tab_top_4' class='tab_top_active' onclick='javascript:openTab(4)'>MQTT</div>
+		<!--float aufheben-->
+		<div style='clear: both;'></div>
+		<!-- Inhalts-Boxen -->
+		<div id="tab_box_1" class="tab_box">
+			<h3>WiFi-Einstellungen</h3>
+			<form method="GET">
+				<table>
+					<tr>
+						<td>
+							Aktiv:
+						</td><td>
+							<input type="text" name="WIFI-ACTIVE" value=""/>
+						</td>
+					</tr><tr>
+						<td>
+							SSID:
+						</td><td>
+							<input type="text" name="WIFI-SSID" value=""/>
+						</td>
+					</tr><tr>
+						<td>
+							Passwort:
+						</td><td>
+							<input type="text" name="WIFI-PASS" value=""/>
+						</td>
+					</tr><tr>
+						<td>
+						</td>
+						<td>
+							<input type="submit" value="Speichern und neu starten">
+						</td>
+					</tr>
+				</table>
+			</form>
+		</div>
+
+		<div id="tab_box_2" class="tab_box">
+			<h3>AWS-Einstellungen</h3>
+			<form method="GET">
+				<table>
+					<tr>
+						<td>
+							Endpoint:
+						</td><td>
+							<input type="text" name="AWS-ENDPOINT" value=""/>
+						</td>
+					</tr><tr>
+						<td>
+							MQTT Port:
+						</td><td>
+							<input type="text" name="AWS-MQTT_PORT" value=""/>
+						</td>
+					</tr><tr>
+						<td>
+							GreenGrass Discovery Port:
+						</td><td>
+							<input type="text" name="AWS-GGD_PORT" value=""/>
+						</td>
+					</tr><tr>
+						<td>
+							GreenGrass Endpoint:
+						</td><td>
+							<input type="text" name="AWS-GG_ENDPOINT" value=""/>
+						</td>
+					</tr><tr>
+						<td>
+							Thing Name:
+						</td><td>
+							<input type="text" name="AWS-THING_NAME" value=""/>
+						</td>
+					</tr><tr>
+						<td>
+						</td>
+						<td>
+							<input type="submit" value="Speichern und neu starten">
+						</td>
+					</tr>
+				</table>
+			</form>
+		</div>
+		<div id="tab_box_3" class="tab_box">
+			<h3>Zertifikate</h3>
+			<form method="GET">
+				<table>
+					<tr>
+						<td>
+							Root CA Datei:
+						</td><td>
+							<input type="text" name="AWS-ROOT_CA" value=""/>
+						</td>
+					</tr><tr>
+						<td>
+							Group CA Datei:
+						</td><td>
+							<input type="text" name="AWS-GROUP_CA" value=""/>
+						</td>
+					</tr><tr>
+						<td>
+							Client Zertifikat:
+						</td><td>
+							<input type="text" name="AWS-CLIENT_CERT" value=""/>
+						</td>
+					</tr><tr>
+						<td>
+							Private Key:
+						</td><td>
+							<input type="text" name="AWS-PRVT_KEY" value=""/>
+						</td>
+					</tr><tr>
+						<td>
+						</td>
+						<td>
+							<input type="submit" value="Speichern und neu starten">
+						</td>
+					</tr>
+				</table>
+			</form>
+		</div>
+		<div id="tab_box_4" class="tab_box">
+			<h3>MQTT</h3>
+			<form method="POST" action="edit_settings" enctype="multipart/form-data">
+				<table>
+					<tr>
+						<td>
+							Root CA Datei:
+						</td><td>
+							<input type="text" name="mqtt" value="<# var:test_double #>"/>
+						</td>
+					</tr><tr>
+						<td>
+							Group CA Datei:
+						</td><td>
+							<input type="text" name="AWS-GROUP_CA" value=""/>
+						</td>
+					</tr><tr>
+						<td>
+							Client Zertifikat:
+						</td><td>
+							<input type="text" name="AWS-CLIENT_CERT" value=""/>
+						</td>
+					</tr><tr>
+						<td>
+							Private Key:
+						</td><td>
+							<input type="text" name="AWS-PRVT_KEY" value=""/>
+						</td>
+					</tr><tr>
+						<td>
+						</td>
+						<td>
+							<input type="submit" value="Speichern und neu starten">
+						</td>
+					</tr>
+				</table>
+			</form>
+		</div>
+	</div>
+	<script type="text/javascript">
+		openTab(1); //Tab 1 öffnen
+	</script>
+</body>
+
 </html>

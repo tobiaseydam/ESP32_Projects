@@ -266,10 +266,10 @@ void onewire_client::read_data(){
         ets_delay_us(100000);
     }
     
+    portENTER_CRITICAL(&myMutex);
     reset_pulse();
 
     for(int i = 0; i<conf->get_num_devices(); i++){
-        portENTER_CRITICAL(&myMutex);
         reset_pulse();
         send_byte(0x55);
         onewire_addr_t addr = conf->get_device(i)->get_addr();
@@ -281,11 +281,11 @@ void onewire_client::read_data(){
         for(int j = 0; j<9; j++){
             d.x[j] = read_byte();
         }
-        portEXIT_CRITICAL(&myMutex);
         conf->get_device(i)->set_data(d);
     }
+    portEXIT_CRITICAL(&myMutex);
 }
 
 void onewire_client::continous_read(){
-    xTaskCreate(run_task, "ONEWIRE_RUN_TASK", 8196, NULL, tskIDLE_PRIORITY+2, &run_task_handle); 
+    xTaskCreate(run_task, "ONEWIRE_RUN_TASK", 8196, NULL, tskIDLE_PRIORITY+20, &run_task_handle); 
 }

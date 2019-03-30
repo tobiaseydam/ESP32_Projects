@@ -3,6 +3,19 @@
 #include "tey_http.hpp"
 #include "tey_http_request_parser.hpp"
 #include "tey_settings.hpp"
+#include "tey_html_template_processor.hpp"
+
+static std::string var_callback(std::string tag, void* ctx){
+    ESP_LOGI("callback", "processing: %s", tag.c_str());
+
+    global_settings* sett = (global_settings*)ctx;
+
+    if(sett->key_exists(tag)){
+        return sett->get_string_value(tag);
+    }
+
+    return "xxx";
+}
 
 void setup_http_server(char *TAG, global_settings* sett, storage_handle* stor_root, 
     storage_client* stor_cl){
@@ -113,22 +126,36 @@ void setup_http_server(char *TAG, global_settings* sett, storage_handle* stor_ro
 
         if(action.compare("open")==0){
             storage_handle* file = new storage_handle(filename);
-            if(file->exists()){
+           if(file->exists()){
                 std::string ext = file->get_extension();
                 if((ext.compare(".htm") == 0) || (ext.compare(".html") == 0)){
                     httpd_resp_set_type(req, "text/html");
+                    
+                    storage_handle* settings_file = new storage_handle("/spiffs/config.json");
+                    global_settings* sett = new global_settings(settings_file);
+                    sett->load_from_file();
+                    
+                    template_processor proc = template_processor(file->get_content_as_string());
+                    proc.set_process_var_callback(var_callback);
+                    proc.set_process_ctx(sett);
+                    proc.process();
+
+                    httpd_resp_send_chunk(req, proc.get_output().c_str(), proc.get_output().length());
+                    httpd_resp_send_chunk(req, NULL, 0);
+
                 }else{
                     httpd_resp_set_type(req, "text");
                     sprintf(resp, "File: %s \n\n", filename.c_str());
                     httpd_resp_send_chunk(req, resp, strlen(resp));
-                }
-                FILE* f = file->open("r");
-                while(fgets(resp, 127, f)){
-                    httpd_resp_send_chunk(req, resp, strlen(resp));
-                }
 
-                httpd_resp_send_chunk(req, NULL, 0);
-                file->close();
+                    FILE* f = file->open("r");
+                    while(fgets(resp, 127, f)){
+                        httpd_resp_send_chunk(req, resp, strlen(resp));
+                    }
+
+                    httpd_resp_send_chunk(req, NULL, 0);
+                    file->close();
+                }
             }else{
                 sprintf(resp, "File not found: %s", filename.c_str());
                 httpd_resp_send(req, resp, strlen(resp));
