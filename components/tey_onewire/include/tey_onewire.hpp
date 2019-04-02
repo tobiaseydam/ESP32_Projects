@@ -8,8 +8,9 @@
 #include "freertos/event_groups.h"
 #include <string>
 
-#define MAX_NUM_ONEWIRE_DEVICES        8
-#define SNQ_LEN_ONEWIRE_DEVICES       10
+#define MAX_NUM_ONEWIRE_DEVICES                 8
+#define SNQ_LEN_ONEWIRE_DEVICES                10
+#define MAX_READ_RETRY_ONEWIRE_DEVICES          5
 
 typedef struct onewire_addr { uint8_t x[8]; } onewire_addr_t;
 typedef struct onewire_data { uint8_t x[9]; } onewire_data_t;

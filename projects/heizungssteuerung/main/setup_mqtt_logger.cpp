@@ -44,7 +44,8 @@ static void mqtt_task(void *param){
                 sprintf(c_top, "%s/%s", ow_topic_fragment.c_str(), sens_name.c_str());
                 p->mqtt_cl->publish(c_top, c_temp, 0, false);
             }else{
-                 ESP_LOGI("mqtt_task", "%s: failed", sens_name.c_str());
+                sprintf(c_temp, "%.2f", ow_dev->get_temperature());
+                ESP_LOGI("mqtt_task", "%s: %s °C (failed)", sens_name.c_str(), c_temp);
             }
             sprintf(c_snq, "%d", ow_dev->get_snq());
             sprintf(c_top, "%s/%s_snq", ow_topic_fragment.c_str(), sens_name.c_str());

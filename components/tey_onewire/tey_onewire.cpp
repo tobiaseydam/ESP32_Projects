@@ -246,7 +246,8 @@ onewire_client::onewire_client(onewire_config *ow_conf){
     io_conf.mode = GPIO_MODE_OUTPUT;
     io_conf.pin_bit_mask = (1ULL<<conf->get_pin());
     io_conf.pull_down_en = GPIO_PULLDOWN_DISABLE;
-    io_conf.pull_up_en = GPIO_PULLUP_DISABLE;
+    //io_conf.pull_up_en = GPIO_PULLUP_DISABLE;
+    io_conf.pull_up_en = GPIO_PULLUP_ENABLE;
     gpio_config(&io_conf);
     search_devices();
     read_data();
@@ -269,19 +270,33 @@ void onewire_client::read_data(){
     portENTER_CRITICAL(&myMutex);
     reset_pulse();
 
+    uint8_t read_cntr = 0;
+    bool chk_crc = false;
+
     for(int i = 0; i<conf->get_num_devices(); i++){
-        reset_pulse();
-        send_byte(0x55);
-        onewire_addr_t addr = conf->get_device(i)->get_addr();
-        for(int j = 0; j<8; j++){
-            send_byte(addr.x[j]);
+        do{
+            reset_pulse();
+            send_byte(0x55);
+            onewire_addr_t addr = conf->get_device(i)->get_addr();
+            for(int j = 0; j<8; j++){
+                send_byte(addr.x[j]);
+            }
+            send_byte(0xBE);
+            onewire_data d;
+            for(int j = 0; j<9; j++){
+                d.x[j] = read_byte();
+            }
+            conf->get_device(i)->set_data(d);
+            conf->get_device(i)->check_crc();
+            chk_crc = conf->get_device(i)->get_crc();
+            read_cntr++;
+        }while((read_cntr<1) & !chk_crc);
+        if(chk_crc){
+            ESP_LOGI(TAG, "success after %d tries", read_cntr);
+        }else{
+            ESP_LOGI(TAG, "failed after %d tries", read_cntr);
         }
-        send_byte(0xBE);
-        onewire_data d;
-        for(int j = 0; j<9; j++){
-            d.x[j] = read_byte();
-        }
-        conf->get_device(i)->set_data(d);
+        read_cntr = 0;
     }
     portEXIT_CRITICAL(&myMutex);
 }
